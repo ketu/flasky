@@ -1,11 +1,14 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
-from flask import render_template,redirect,url_for
+from flask import render_template,redirect,url_for,flash
 from flask.views import View,MethodView
 
 from app.core import lm
 from app.core.views import ViewMixin
+
+
 from .model import User
+from .forms import LoginForm
 
 
 
@@ -14,14 +17,26 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-class ProfileView(MethodView,ViewMixin):
-    pass
+
+
 
 class LoginView(MethodView,ViewMixin):
     def get(self):
-        return render_template(self.template_name)
+        form = LoginForm()
+        return render_template(self.template_name,form=form)
     def post(self):
-        return redirect(url_for('dashboard'))
+        form = LoginForm()
+        if form.validate_on_submit():
+
+            flash('Login requested for OpenID="' + form.email.data + '", remember_me=' + str(form.remember.data))
+            return redirect(url_for('accounts.login'))
+        return render_template(self.template_name,form=form)
+        #return redirect(url_for('dashboard'))
+
+class ProfileView(MethodView,ViewMixin):
+    pass
+
+
 
 class RegisterView(MethodView,ViewMixin):
     def get(self):
