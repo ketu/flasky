@@ -1,15 +1,15 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
-from flask import Blueprint
-from .views import LoginView, RegisterView, LogoutView,ProfileView
 
 
+from helper.urls import patterns
 
-urlpatterns = (
-    #('/dashboard/', RegisterView.as_view('register')),
-    ('/profile/', ProfileView.as_view('profile')),
-    #('/settings/', RegisterView.as_view('register')),
-    ('/login/', LoginView.as_view('login', template = 'accounts/login.html')),
-    ('/register/', RegisterView.as_view('register')),
-    ('/logout/', LogoutView.as_view('logout')),
+from .views import ProfileView,LoginView,RegisterView,LogoutView
+
+urlpatterns = ("/account",
+    ('/profile/', ProfileView.as_view('profile',template = 'profile.html')),
+    ('/login/', LoginView.as_view('login',template = 'login.html')),
+    ('/register/', RegisterView.as_view('register',template = 'register.html')),
+    ('/logout/', LogoutView.as_view('logout',template = 'logout.html')),
 )
+

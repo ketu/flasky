@@ -29,7 +29,7 @@ babel = Babel(app)
 
 lm = LoginManager()
 lm.init_app(app)
-lm.login_view = 'login'
+lm.login_view = 'accounts.login'
 
 
 LANGUAGES = {
