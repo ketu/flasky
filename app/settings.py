@@ -19,10 +19,18 @@ STATIC_FOLDER = SITE_ROOT + '/static'
 INSTALLED_APPLICATION = (
     'dashboard',
     'accounts',
+    'search',
     'catalog',
     'customers',
     'sales'
 )
+
+
+LANGUAGES = {
+    'en': 'English',
+    'cn': 'Chinese'
+}
+
 #FLask-WFT
 #Flask-Migrate
 #Flask-Script

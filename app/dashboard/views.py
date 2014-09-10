@@ -1,43 +1,36 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
-from flask import render_template,redirect,url_for
+from flask import request,redirect,render_template,url_for,flash,Blueprint
 from flask.views import View,MethodView
 
 from flask.ext.login import login_required
-from app.core.views import ViewMixin
 
-class DashboardView(View,ViewMixin):
-    decorators = [login_required]
-
-    def dispatch_request(self):
-        return render_template(self.template_name)
-
-class MessageView(View,ViewMixin):
-    decorators = [login_required]
-    def dispatch_request(self):
-        return render_template(self.template_name)
-
-class AlertsView(View,ViewMixin):
-    decorators = [login_required]
-    def dispatch_request(self):
-        return render_template(self.template_name)
-
-class TasksView(View,ViewMixin):
-    decorators = [login_required]
-    def dispatch_request(self):
-        return render_template(self.template_name)
+from app.core import app
+system = Blueprint('system', __name__, url_prefix='/system')
 
 
-class SearchView(View,ViewMixin):
-    decorators = [login_required]
-    def dispatch_request(self):
-        return render_template(self.template_name)
 
-class SettingsView(MethodView,ViewMixin):
-    decorators = [login_required]
-    def get(self):
-        return render_template(self.template_name)
+@system.route('/dashboard/')
+def dashboard():
+    return render_template('dashboard.html')
 
-    def post(self):
-        return render_template(self.template_name)
 
+@system.route('/message/')
+def message():
+    return render_template('message.html')
+
+
+@system.route('/alerts/')
+def alerts():
+    return render_template('alerts.html')
+
+
+@system.route('/tasks/')
+def tasks():
+    return render_template('tasks.html')
+
+@system.route('/settings/',methods = ['GET','POST'])
+def settings():
+    return render_template('settings.html')
+
+app.register_blueprint(system)

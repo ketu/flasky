@@ -11,7 +11,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url_for('dashboard') }}">Flask ERP</a>
+                <a class="navbar-brand" href="{{ url_for('system.dashboard') }}">Flask ERP</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -38,7 +38,7 @@
                         {% endblock %}
                         <li class="divider"></li>
                         <li>
-                            <a class="text-center" href="{{ url_for('message') }}">
+                            <a class="text-center" href="{{ url_for('system.message') }}">
                                 <strong>{{ _('Read All Messages') }}</strong>
                                 <i class="fa fa-angle-right"></i>
                             </a>
@@ -76,7 +76,7 @@
 
                         <li class="divider"></li>
                         <li>
-                            <a class="text-center" href="{{ url_for('tasks') }}">
+                            <a class="text-center" href="{{ url_for('system.tasks') }}">
                                 <strong>{{ _('See All Tasks')}}</strong>
                                 <i class="fa fa-angle-right"></i>
                             </a>
@@ -105,7 +105,7 @@
                         {% endblock %}
                         <li class="divider"></li>
                         <li>
-                            <a class="text-center" href="{{ url_for('alerts') }}">
+                            <a class="text-center" href="{{ url_for('system.alerts') }}">
                                 <strong>{{ _('See All Alerts')}}</strong>
                                 <i class="fa fa-angle-right"></i>
                             </a>
@@ -119,12 +119,12 @@
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="{{ url_for('profile') }}"><i class="fa fa-user fa-fw"></i>{{ _('User Profile') }}</a>
+                        <li><a href="{{ url_for('accounts.profile') }}"><i class="fa fa-user fa-fw"></i>{{ _('User Profile') }}</a>
                         </li>
-                        <li><a href="{{ url_for('settings') }}"><i class="fa fa-gear fa-fw"></i>{{ _('Settings') }}</a>
+                        <li><a href="{{ url_for('system.settings') }}"><i class="fa fa-gear fa-fw"></i>{{ _('Settings') }}</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out fa-fw"></i>{{ _('Logout') }}</a>
+                        <li><a href="{{ url_for('accounts.logout') }}"><i class="fa fa-sign-out fa-fw"></i>{{ _('Logout') }}</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -151,17 +151,17 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="{{ url_for('dashboard') }}"><i class="fa fa-dashboard fa-fw"></i> {{ _('Dashboard')}}</a>
+                            <a href="{{ url_for('system.dashboard') }}"><i class="fa fa-dashboard fa-fw"></i> {{ _('Dashboard')}}</a>
                         </li>
 
                         <li>
                             <a href="javascript:void(0)"><i class="fa fa-wrench fa-fw"></i> {{ _('Sales') }}<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{{ url_for('order') }}">{{ _('Order') }}</a>
+                                    <a href="{{ url_for('sales.order') }}">{{ _('Order') }}</a>
                                 </li>
                                 <li>
-                                    <a href="{{ url_for('shipment') }}">{{ _('Shipment') }}</a>
+                                    <a href="{{ url_for('sales.shipment') }}">{{ _('Shipment') }}</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
@@ -170,10 +170,10 @@
                             <a href="javascript:void(0)"><i class="fa fa-sitemap fa-fw"></i> {{ _('Catalog') }}<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="{{ url_for('category') }}">{{ _('Category') }}</a>
+                                    <a href="{{ url_for('catalog.category') }}">{{ _('Category') }}</a>
                                 </li>
                                 <li>
-                                     <a href="{{ url_for('product') }}">{{ _('Product') }}</a>
+                                     <a href="{{ url_for('catalog.product') }}">{{ _('Product') }}</a>
                                 </li>
                                 <li>
                                     <a href="javascript:void(0)">{{ _('Attributes') }} <span class="fa arrow"></span></a>
@@ -201,6 +201,15 @@
         {% block wrapper %}
              <div id="page-wrapper">
             <div class="row">
+                           {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="alert alert-info alert-{{category}}">
+                                  {{message}}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
                 <div class="col-lg-12">
                     <h1 class="page-header">Grid</h1>
                 </div>

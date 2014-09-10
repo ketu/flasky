@@ -2,9 +2,9 @@
 #-*- coding:utf8 -*-
 
 from flask.ext.security import UserMixin, RoleMixin
-from flask.ext.security.utils import encrypt_password
+from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.core import app,db
+from app.core import db
 
 
 class User(db.Model,UserMixin):
@@ -12,8 +12,20 @@ class User(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(254), unique=True)
-    passwd = db.Column(db.String(128))
-    role = db.relationship("Role", backref=db.backref('user', order_by=id))
+    password_hash = db.Column(db.String(128))
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
+
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def is_authenticated(self):
         return True
@@ -32,5 +44,6 @@ class Role(db.Model,RoleMixin):
     __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(254))
+    users = db.relationship('User', backref='role', lazy='dynamic')
 
 
