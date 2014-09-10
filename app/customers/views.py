@@ -7,21 +7,21 @@ from app import settings
 from app.core import app
 
 
-catalog = Blueprint('catalog', __name__,url_prefix='/catalog',template_folder=os.path.join(settings.TEMPLATE_FOLDER,'catalog'))
+customers = Blueprint('customers', __name__,url_prefix='/customers',template_folder=os.path.join(settings.TEMPLATE_FOLDER,'customers'))
 
 
 
-@catalog.route('/category/')
+@customers.route('/')
 @login_required
-def category():
+def index():
     return render_template('dashboard.html')
 
 
-@catalog.route('/product/')
+@customers.route('/view/<int:id>')
 @login_required
-def product():
+def view():
     return render_template('message.html')
 
 
 
-app.register_blueprint(catalog)
+app.register_blueprint(customers)

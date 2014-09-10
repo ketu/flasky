@@ -18,7 +18,7 @@ if __name__ == '__main__':
         args = ['app',_app,'views']
         try :
             _module = importlib.import_module(".".join(args))
-        except ImportError:
+        except ImportError as e:
             pass
 
         #print(_module)

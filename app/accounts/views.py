@@ -39,32 +39,19 @@ def register():
 
 
 @account.route('/profile/')
+@login_required
 def profile():
     return render_template('message.html')
 
 
 @account.route('/logout/')
+@login_required
 def logout():
-    return render_template('alerts.html')
+
+    logout_user()
+    return redirect(url_for('accounts.login'))
 
 
 
 
 app.register_blueprint(account)
-
-"""
-class LoginView(MethodView,ViewMixin):
-    def get(self):
-        form = LoginForm()
-        return render_template(self.template_name,form=form)
-    def post(self):
-        form = LoginForm()
-        if form.validate_on_submit():
-            user = User.query.filter_by(email=form.email.data).first()
-            if user is not None and user.verify_password(form.password.data):
-                login_user(user, form.remember.data)
-                return redirect(request.args.get('next') or url_for('system.dashboard'))
-            flash('Invalid username or password.')
-            return render_template(self.template_name,form=form)
-        #return redirect(url_for('dashboard'))
-"""
