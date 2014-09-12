@@ -1,11 +1,10 @@
-from boto.mws.connection import MWSConnection
 import sys, getopt
-
+from boto.mws.connection import MWSConnection
 def main(argv):
-MarketPlaceID = 'a'
-Merchant = 'a'
-AccessKeyID = 'a'
-SecretKey = 'a'
+    MarketPlaceID = 'a'
+    Merchant = 'a'
+    AccessKeyID = 'a'
+    SecretKey = 'a'
 
 program_name = sys.argv[0]
 MarketPlaceID = sys.argv[1]

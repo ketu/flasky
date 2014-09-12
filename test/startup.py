@@ -6,12 +6,12 @@ import urlparse,urllib2,urllib
 import base64
 
 
-LOCAL_XMLRPC = 'http://127.0.0.1/helen/index.php/api/xmlrpc/'
+LOCAL_XMLRPC = 'http://127.0.0.1:10000/index.php/api/xmlrpc/'
 LOCAL_XMLRPC_USER = 'ketu'
 LOCAL_XMLRPC_PASSWD = 'xiaolai123'
 
 
-REMOTE_XMLRPC = 'http://127.0.0.1/obdplaza/index.php/api/xmlrpc/'
+REMOTE_XMLRPC = 'http://127.0.0.1:10001/index.php/api/xmlrpc/'
 REMOTE_XMLRPC_USER = 'ketu'
 REMOTE_XMLRPC_PASSWD = 'xiaolai123'
 
@@ -29,7 +29,7 @@ remote_session = remote_proxy.login(REMOTE_XMLRPC_USER,REMOTE_XMLRPC_PASSWD)
 ATTRIBUTE_SET_ID =  4
 
 
-CATEGORY_ID = 27
+
 products = local_proxy.call(local_session, 'catalog_product.list',[{'status':1}])
 
 
@@ -39,11 +39,28 @@ need_upload_count = (len(products))
 skus = ['EC'+str(d) for d in range(1200, 1200+need_upload_count*2)]
 
 
+DEFAULT_CATEGORY_ID = 25
+CATEGORIES_MAP = {
+    '330': 24,
+    '353':23,
+    '385':25,
+}
+
 
 for product in products:
     try:
+
+        categories = []
         product = local_proxy.call(local_session, 'catalog_product.info',[product['sku']])
         media = local_proxy.call(local_session,'catalog_product_attribute_media.list',[product['sku']])
+
+        for c in product['categories']:
+            if c in CATEGORIES_MAP:
+                categories.append(CATEGORIES_MAP[c])
+
+
+        if not categories:
+            categories.append(DEFAULT_CATEGORY_ID)
 
         stock_data = {
                 'qty' : 1000,
@@ -58,23 +75,22 @@ for product in products:
                  'is_in_stock' : 1
         }
         upload_data = {
-                'categories' : [CATEGORY_ID],
+                'categories' : categories,
                 'name' : product['name'],
                 'chinese':product['sku'],
-                'description' : product['specifications'],
+                'description' : product['specifications'] or "" ,
                 'short_description' : product['short_description'] or "",
                 'weight' : float(product['weight']) * 1000,
-                'status' : 1,
+                'status' : 0,
                 #'website_ids':[1],
                 'visibility' :4,
                 'price' : product['price'],
                 'tax_class_id' : 0,
                 'stock_data' : stock_data
         }
-        print(upload_data)
-        print(skus.pop(0))
-        product_id = remote_proxy.call(remote_session,'product.create',['simple',ATTRIBUTE_SET_ID,skus.pop(0),upload_data])
 
+        product_id = remote_proxy.call(remote_session,'product.create',['simple',ATTRIBUTE_SET_ID,skus.pop(0),upload_data])
+        print(product_id)
         for m in media:
             try :
                 image = urlparse.urljoin('http://www.angelcigs.com','/media/catalog/product'+m['file'])
@@ -90,7 +106,7 @@ for product in products:
             except Exception as e:
                 print(e)
                 continue
-    except IOError as e:
+    except Exception as e:
         print(e)
         continue
 
