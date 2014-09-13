@@ -19,7 +19,7 @@ class Customer(db.Model):
     #default_shipping = db.relationship("Address", uselist=False, backref="customer")
     #default_billing = db.relationship("Address", uselist=False, backref="customer")
     shipping_address =db.relationship("Address", foreign_keys=['customer_address.id'],primaryjoin = "customer_address.method_type='billing'",backref="customer", lazy='dynamic')
-    billing_address =db.relationship("Address", foreign_keys=['customer_address.id'],primaryjoin = "customer_address.method_type='billing'",backref="customer", lazy='dynamic')
+    billing_address =db.relationship("Address", foreign_keys=['customer_address.id'], post_update=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
