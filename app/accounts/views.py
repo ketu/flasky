@@ -2,16 +2,18 @@
 #-*- coding:utf8 -*-
 import os
 from flask import request,redirect,render_template,url_for,flash,Blueprint
-from flask.views import View,MethodView
-
 from flask.ext.login import login_required,login_user,logout_user
 
+
+
 from app import settings
-from app.core import login_manager,app
-from app.core.views import ViewMixin
+from app.core import login_manager,app,db
+
 
 from .model import User
-from .forms import LoginForm
+from .forms import LoginForm,RegisterForm
+
+
 
 
 account = Blueprint('accounts', __name__,url_prefix='/accounts',template_folder=os.path.join(settings.TEMPLATE_FOLDER,'accounts'))
@@ -33,9 +35,23 @@ def login():
         flash('Invalid username or password.')
     return render_template('login.html',form=form)
 
-@account.route('/register/')
+@account.route('/register/',methods=['GET','POST'])
 def register():
-    return render_template('dashboard.html')
+    form = RegisterForm()
+    if form.validate_on_submit():
+
+        user = User(email=form.email.data,
+                    username=form.username.data,
+                    password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        token = user.generate_confirmation_token()
+
+        flash('A confirmation email has been sent to you by email. '+token)
+        return redirect(url_for('accounts.login'))
+
+    return render_template('register.html',form=form)
+
 
 
 @account.route('/profile/')

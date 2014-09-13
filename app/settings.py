@@ -26,6 +26,8 @@ INSTALLED_APPLICATION = (
 )
 
 
+API_TYPE = ('amazon','magento','ebay','aliexpress','other')
+
 LANGUAGES = {
     'en': 'English',
     'cn': 'Chinese'

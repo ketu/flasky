@@ -1,8 +1,9 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
-
+from flask import current_app
 from flask.ext.security import UserMixin, RoleMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from app.core import db
 
@@ -38,6 +39,11 @@ class User(db.Model,UserMixin):
 
     def get_id(self):
         return unicode(self.id)
+
+
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': self.id})
 
 
 class Role(db.Model,RoleMixin):

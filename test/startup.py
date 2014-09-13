@@ -105,7 +105,7 @@ for product in products:
                 remote_proxy.call(remote_session,'product_media.create',[product_id,image_data])
             except Exception as e:
                 print(e)
-                continue
+                pass
     except Exception as e:
         print(e)
         continue
