@@ -1,16 +1,12 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
 from datetime import datetime
-import hashlib
-from flask import current_app
-from flask.ext.security import UserMixin, RoleMixin
-from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from app.core import db
+from app.dashboard.model import Website
 
 
-class Customer(db.Model,UserMixin):
+class Customer(db.Model):
     __tablename__ = 'customer'
     id = db.Column(db.Integer, primary_key=True)
     website_id = db.Column(db.Integer, db.ForeignKey('website.id'))
@@ -18,9 +14,13 @@ class Customer(db.Model,UserMixin):
     email = db.Column(db.String(254), unique=True)
     firstname = db.Column(db.String(64))
     lastname = db.Column(db.String(64))
-    default_shipping = db.Column(db.Integer, db.ForeignKey('customer_address.id'),nullable=True)
-    default_billing = db.Column(db.Integer, db.ForeignKey('customer_address.id'),nullable=True)
-    created_at = db.Column(db.DateTime(), default=datetime.utcnow)
+    default_shipping = db.Column(db.Integer, db.ForeignKey('customer_address.id'))
+    default_billing = db.Column(db.Integer, db.ForeignKey('customer_address.id'))
+    #default_shipping = db.relationship("Address", uselist=False, backref="customer")
+    #default_billing = db.relationship("Address", uselist=False, backref="customer")
+    shipping_address =db.relationship("Address", foreign_keys=['customer_address.id'],primaryjoin = "customer_address.method_type='billing'",backref="customer", lazy='dynamic')
+    billing_address =db.relationship("Address", foreign_keys=['customer_address.id'],primaryjoin = "customer_address.method_type='billing'",backref="customer", lazy='dynamic')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Group(db.Model):
@@ -34,7 +34,7 @@ class Group(db.Model):
 class Address(db.Model):
     __tablename__ = 'customer_address'
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id', use_alter=True,name="fk_address_customer"))
     firstname = db.Column(db.String(64))
     lastname = db.Column(db.String(64))
     country_id = db.Column(db.String(32))
@@ -46,5 +46,5 @@ class Address(db.Model):
     telephone = db.Column(db.String(64))
     fax = db.Column(db.String(64))
     company = db.Column(db.String(64))
-    method_type = db.Column(db.Enum(('shipping','billing')))
-    created_at = db.Column(db.DateTime(), default=datetime.utcnow)
+    method_type = db.Column(db.Enum('shipping','billing'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

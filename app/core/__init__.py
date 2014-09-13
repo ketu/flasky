@@ -29,6 +29,10 @@ login_manager.init_app(app)
 login_manager.login_view = 'accounts.login'
 
 
+@manager.command
+def create():
+    db.create_all()
+
 @babel.localeselector
 def get_locale():
     return request.accept_languages.best_match(settings.LANGUAGES.keys())

@@ -15,5 +15,5 @@ class Website(db.Model):
     name = db.Column(db.String(254))
     code = db.Column(db.String(32))
     link = db.Column(db.String(254))
-    type = db.Column(db.Enum(settings.API_TYPE))
-    config = db.Column(db.Text(),nullable=True)
+    type = db.Column(db.Enum('amazon','magento','ebay','aliexpress','other'))
+    config = db.Column(db.Text,nullable=True)

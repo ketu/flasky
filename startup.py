@@ -20,6 +20,11 @@ if __name__ == '__main__':
             _module = importlib.import_module(".".join(args))
         except ImportError as e:
             pass
+        args = ['app',_app,'model']
+        try :
+            _module = importlib.import_module(".".join(args))
+        except ImportError as e:
+            pass
 
         #print(_module)
 
