@@ -16,10 +16,8 @@ sales = Blueprint('sales', __name__,url_prefix='/sales',template_folder=os.path.
 @sales.route('/order/<int:page>/')
 @login_required
 def order(page):
-
-    pagination = Customer.query.order_by(Customer.id.desc()).paginate(page = page, per_page=10, error_out=False)
-    return render_template('customers.html',customers = pagination.items,pagination=pagination)
-    return render_template('order/list.html')
+    pagination = Order.query.order_by(Order.id.desc()).paginate(page = page, per_page=10, error_out=False)
+    return render_template('order/list.html',orders = pagination.items,pagination=pagination)
 
 
 @sales.route('/shipment/')

@@ -64,7 +64,7 @@ class Invoice(db.Model):
     __tablename__ = 'sales_invoice'
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('sales_order.id'))
-    order = db.relationship("Order", uselist=False, backref="sales_shipment")
+    order = db.relationship("Order", uselist=False, backref="sales_invoice")
 
     email_sent = db.Column(db.Boolean,default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -74,7 +74,7 @@ class Payment(db.Model):
     __tablename__ = 'sales_payment'
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('sales_order.id'))
-    order = db.relationship("Order", uselist=False, backref="sales_shipment")
+    order = db.relationship("Order", uselist=False, backref="sales_payment")
     shipping_captured = db.Column(db.Numeric)
     base_shipping_captured = db.Column(db.Numeric)
     base_amount_ordered = db.Column(db.Numeric)
