@@ -1,11 +1,13 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
 
-import os,importlib
+import os,importlib,sys,cdecimal
 
 from app.core import manager,app
 
 from app import settings
+
+sys.modules["decimal"] = cdecimal
 #from app.accounts.views import account
 #from app.dashboard.views import system
 #from app.sales.views import sales

@@ -17,3 +17,8 @@ class Website(db.Model):
     link = db.Column(db.String(254))
     type = db.Column(db.Enum('amazon','magento','ebay','aliexpress','other'))
     config = db.Column(db.Text,nullable=True)
+
+
+
+    def __unicode__(self):
+        return self.name

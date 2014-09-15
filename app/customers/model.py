@@ -10,16 +10,17 @@ class Customer(db.Model):
     __tablename__ = 'customer'
     id = db.Column(db.Integer, primary_key=True)
     website_id = db.Column(db.Integer, db.ForeignKey('website.id'))
+    website = db.relationship("Website", uselist=False, backref="customer", lazy="joined")
     group_id = db.Column(db.Integer, db.ForeignKey('customer_group.id'))
+    group = db.relationship("Group", uselist=False, backref="customer", lazy="joined")
     email = db.Column(db.String(254), unique=True)
     firstname = db.Column(db.String(64))
     lastname = db.Column(db.String(64))
     default_shipping = db.Column(db.Integer, db.ForeignKey('customer_address.id'))
     default_billing = db.Column(db.Integer, db.ForeignKey('customer_address.id'))
     #default_shipping = db.relationship("Address", uselist=False, backref="customer")
-    #default_billing = db.relationship("Address", uselist=False, backref="customer")
-    shipping_address =db.relationship("Address", foreign_keys=['customer_address.id'],primaryjoin = "customer_address.method_type='billing'",backref="customer", lazy='dynamic')
-    billing_address =db.relationship("Address", foreign_keys=['customer_address.id'], post_update=True)
+    shipping_address =db.relationship("Address", foreign_keys=[default_shipping])
+    billing_address =db.relationship("Address", foreign_keys=[default_billing], post_update=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
