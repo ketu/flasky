@@ -22,8 +22,9 @@ def order(page = 1):
 
 @sales.route('/order/view/<int:id>/')
 @login_required
-def view():
-    return render_template('shipment.html')
+def order_view(id):
+    order = Order.query.get_or_404(id)
+    return render_template('order/view.html',order = order)
 
 
 @sales.route('/shipment/')

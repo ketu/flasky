@@ -36,8 +36,13 @@ class Order(db.Model):
     shipping_address_id = db.Column(db.Integer, db.ForeignKey('customer_address.id'))
     billing_address_id = db.Column(db.Integer, db.ForeignKey('customer_address.id'))
 
-    shipping_address =db.relationship("Address", foreign_keys=[shipping_address_id])
-    billing_address =db.relationship("Address", foreign_keys=[billing_address_id], post_update=True)
+    shipping_address =db.relationship("Address", uselist=False, foreign_keys=[shipping_address_id])
+    billing_address =db.relationship("Address", uselist=False, foreign_keys=[billing_address_id])
+
+    items =db.relationship("OrderItem",backref='sales_order_item', lazy='dynamic')
+    shipment =db.relationship("Shipment",backref='sales_shipment', lazy='dynamic')
+    payment =db.relationship("Payment",backref='sales_payment', lazy='dynamic')
+    invoice =db.relationship("Invoice" ,backref='sales_invoice', lazy='dynamic')
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

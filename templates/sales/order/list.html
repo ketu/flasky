@@ -47,7 +47,7 @@
                                             <td class=" ">{{order.state}}</td>
                                             <td class=" ">{{order.customer.email}}</td>
                                             <td class="center ">{{order.created_at}}</td>
-                                            <td class="center "><a href="{{url_for('sales.order.view')}}">{{_("View")}}</a></td>
+                                            <td class="center "><a href="{{url_for('sales.order_view',id=order.id)}}">{{_("View")}}</a></td>
                                         </tr>
 
                                     {% endfor %}

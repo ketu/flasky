@@ -1,0 +1,140 @@
+{% extends "admin.html" %}
+{%block styles%}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/plugins/dataTables.bootstrap.css')}}">
+{%endblock%}
+{%block heading %}
+    {{super()}}
+{%endblock%}
+{%block main %}
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Order # {{order.increment_id}}
+                        </div>
+                        <div class="panel-body">
+                            <p>{{_('Order Date')}} : <strong>{{order.created_at}}</strong></p>
+                            <p>{{_('Order Status')}} : <strong>{{order.state}}</strong></p>
+                            <p>{{_('Purchased From')}} : <strong>{{order.website.name}}</strong></p>
+
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Account Information
+                        </div>
+                        <div class="panel-body">
+                            <p>{{_('Customer Name')}} : <strong>Guest</strong></p>
+                            <p>{{_('Customer Email')}} : <strong>{{order.customer.email}}</strong></p>
+                            <p>{{_('Customer Group')}} : <strong>{{order.customer.group.name}}</strong></p>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Billing Address
+                        </div>
+                        <div class="panel-body">
+                                {{ macros.address(order.billing_address) }}
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Shipping Address
+
+                        </div>
+                        <div class="panel-body">
+                            {{ macros.address(order.shipping_address) }}
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Payment Information
+                        </div>
+                        <div class="panel-body">
+
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Shipping & Handling Information
+                        </div>
+                        <div class="panel-body">
+                        {{order.shipping_method}}
+                            {%for shipment in order.shipment%}
+                                <p>{{shipment.tracking.title}}</p>
+                            <p>{{shipment.tracking.track_number}}</p>
+                            {% endfor%}
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Item Ordered
+                        </div>
+                        <div class="panel-body">
+                            <table>
+                                <tr></tr>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Comment History
+                        </div>
+                        <div class="panel-body">
+
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+<div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Order Totals
+                        </div>
+                        <div class="panel-body">
+
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+{%endblock %}
+
