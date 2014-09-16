@@ -21,6 +21,6 @@ class Product(db.Model):
     __tablename__ = 'catalog_product'
     id = db.Column(db.Integer, primary_key=True)
     entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
-    sku = db.Column(db.String(64))
+    sku = db.Column(db.String(64),unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)

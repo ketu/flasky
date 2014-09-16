@@ -20,10 +20,27 @@ def order(page = 1):
     return render_template('order/list.html',orders = pagination.items,pagination=pagination)
 
 
+@sales.route('/order/view/<int:id>/')
+@login_required
+def view():
+    return render_template('shipment.html')
+
+
 @sales.route('/shipment/')
 @login_required
 def shipment():
     return render_template('shipment.html')
+
+
+@sales.route('/payment/')
+@login_required
+def payment():
+    pass
+
+@sales.route('/invoice/')
+@login_required
+def invoice():
+    pass
 
 
 

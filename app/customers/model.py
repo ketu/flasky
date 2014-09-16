@@ -47,5 +47,8 @@ class Address(db.Model):
     telephone = db.Column(db.String(64))
     fax = db.Column(db.String(64))
     company = db.Column(db.String(64))
-    method_type = db.Column(db.Enum('shipping','billing'))
+    address_type = db.Column(db.Enum('shipping','billing'))
+
+    external_address_id = db.Column(db.Integer,nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

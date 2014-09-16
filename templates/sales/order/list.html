@@ -31,9 +31,9 @@
                                     <thead>
                                         <tr role="row">
                                             <th tabindex="0" rowspan="1" colspan="1" style="width: 40px;"><input type="checkbox"></th>
-                                            <th tabindex="0" rowspan="1" colspan="1" style="width: 40px;">{{_("ID")}}</th>
+                                            <th tabindex="0" rowspan="1" colspan="1" style="width: 40px;">{{_("Order ID")}}</th>
                                             <th tabindex="0" rowspan="1" colspan="1" style="width: 258px;">{{_("Website")}}</th>
-                                            <th tabindex="0" rowspan="1" colspan="1" style="width: 258px;">{{_("Group")}}</th>
+                                            <th tabindex="0" rowspan="1" colspan="1" style="width: 258px;">{{_("Status")}}</th>
                                             <th tabindex="0" rowspan="1" colspan="1" style="width: 238px;">{{_("Email")}}</th>
                                             <th tabindex="0" rowspan="1" colspan="1" style="width: 171px;">{{_("Created On")}}</th>
                                             <th tabindex="0" rowspan="1" colspan="1" style="width: 127px;">{{_("Action")}}</th></tr>
@@ -42,12 +42,12 @@
                                     {% for order in orders %}
                                    <tr class="gradeA odd">
                                             <td class=""><input type="checkbox" value="{{ order.id }}" name="mass_ids[]"></td>
-                                            <td class="">{{ order.id}}</td>
+                                            <td class="">{{ order.increment_id}}</td>
                                             <td class=" ">{{order.website.name}}</td>
-                                            <td class=" "></td>
                                             <td class=" ">{{order.state}}</td>
+                                            <td class=" ">{{order.customer.email}}</td>
                                             <td class="center ">{{order.created_at}}</td>
-                                            <td class="center "><a href="">{{_("Edit")}}</a> | <a href="">{{_("Delete")}}</a></td>
+                                            <td class="center "><a href="{{url_for('sales.order.view')}}">{{_("View")}}</a></td>
                                         </tr>
 
                                     {% endfor %}
