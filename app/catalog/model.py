@@ -24,8 +24,8 @@ class Category(db.Model):
     def before_insert_or_update_event(mapper, connection, target):
         parent_id = target.parent_id
         parent = None
+        lft = 1
         gt_filter = None
-
 
         if parent_id :
             parent = Category.query.get(parent_id)
@@ -35,8 +35,9 @@ class Category(db.Model):
             lft = parent.lft + 1
         else:
             parent = Category.query.order_by(Category.rgt.asc()).first()
-            gt_filter = parent.rgt
-            lft = parent.rgt + 1
+            if parent:
+                gt_filter = parent.rgt
+                lft = parent.rgt + 1
 
         if gt_filter :
             Category.query().update(lft = Category.lft +2  ).where(Category.lft.gt(gt_filter))
@@ -59,14 +60,8 @@ class Category(db.Model):
 
 #db.event.listen(Category, 'before_delete', Category.before_delete, propagate =True,retval=True)
 db.event.listen(Category, 'before_update', Category.before_insert_or_update_event, propagate =True,retval=True)
-#db.event.listen(Category, 'before_insert', Category.before_insert_or_update_event, propagate =True,retval=True)
+db.event.listen(Category, 'before_insert', Category.before_insert_or_update_event, propagate =True,retval=True)
 
-c = Category.query.order_by().first()
-c.parent_id = 3
-
-db.session.add(c)
-#db.session.delete(Category.query.get(5))
-db.session.commit()
 class Product(db.Model):
     __tablename__ = 'catalog_product'
     id = db.Column(db.Integer, primary_key=True)
