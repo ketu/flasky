@@ -39,7 +39,8 @@ class Category(db.Model):
             lft = parent.rgt + 1
 
         if gt_filter :
-            Category.query().update(lft = ).(lft__gt = gtFilter).update(lft = models.F('lft') + 2)
+            Category.query().update(lft = Category.lft +2  ).where(Category.lft.gt(gt_filter))
+            Category.query().update(rgt = Category.rgt +2  ).where(Category.rgt.gt(gt_filter))
             #Category.objects().filter_by(rgt__gt = gtFilter).update(rgt = models.F('rgt') + 2)
         rgt = lft + 1
         target.lft = lft
