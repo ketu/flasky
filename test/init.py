@@ -24,6 +24,23 @@ local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
 
 
+categories = local_proxy.call(local_session,'catalog_category.tree',[3])
+
+
+for category in categories['children']:
+    #print(category)
+
+    c = Category(
+        entity_type_id = 1,
+        parent_id = 1
+    )
+    db.session.add(c)
+
+db.session.commit()
+
+exit()
+
+
 
 
 
