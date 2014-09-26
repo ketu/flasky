@@ -32,11 +32,12 @@ for category in categories['children']:
 
     c = Category(
         entity_type_id = 1,
-        parent_id = 1
+        #parent_id = None
     )
     db.session.add(c)
+    db.session.commit()
 
-db.session.commit()
+
 
 exit()
 

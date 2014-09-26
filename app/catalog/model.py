@@ -1,6 +1,7 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
 from datetime import datetime
+
 from flask.ext import sqlalchemy
 from app.core import db
 from app.eav.model import Entities
@@ -16,7 +17,7 @@ class Category(db.Model):
     lft = db.Column(db.Integer, nullable=True)
     rgt = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow,onupdate=datetime.utcnow)
 
 
 
@@ -35,18 +36,22 @@ class Category(db.Model):
             lft = parent.lft + 1
         else:
             parent = Category.query.order_by(Category.rgt.asc()).first()
+
+            print(parent.id)
             if parent:
                 gt_filter = parent.rgt
                 lft = parent.rgt + 1
 
         if gt_filter :
-            Category.query().update(lft = Category.lft +2  ).where(Category.lft.gt(gt_filter))
-            Category.query().update(rgt = Category.rgt +2  ).where(Category.rgt.gt(gt_filter))
+            Category.query.filter(Category.lft.__gt__(gt_filter)).update(dict(lft=Category.lft +2))
+            Category.query.filter(Category.rgt.__gt__(gt_filter)).update(dict(rgt=Category.rgt +2))
+
             #Category.objects().filter_by(rgt__gt = gtFilter).update(rgt = models.F('rgt') + 2)
+
+
         rgt = lft + 1
         target.lft = lft
         target.rgt = rgt
-
 
     @staticmethod
     def before_delete(mapper, connection, target):
