@@ -32,7 +32,7 @@ for category in categories['children']:
 
     c = Category(
         entity_type_id = 1,
-        #parent_id = None
+        parent_id = 7
     )
     db.session.add(c)
     db.session.commit()

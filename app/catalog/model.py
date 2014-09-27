@@ -35,12 +35,13 @@ class Category(db.Model):
             gt_filter = parent.lft
             lft = parent.lft + 1
         else:
-            parent = Category.query.order_by(Category.rgt.asc()).first()
+            parent = Category.query.order_by(Category.rgt.desc()).first()
 
-            print(parent.id)
-            if parent:
-                gt_filter = parent.rgt
+            #print(parent.id)
+            if parent is not None:
+                #gt_filter = parent.rgt
                 lft = parent.rgt + 1
+
 
         if gt_filter :
             Category.query.filter(Category.lft.__gt__(gt_filter)).update(dict(lft=Category.lft +2))
