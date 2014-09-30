@@ -42,6 +42,7 @@ for category in categories['children']:
 
     c = Category(
         entity_type_id = 1,
+
         parent_id =2
     )
     db.session.add(c)

@@ -24,19 +24,23 @@ class Category(db.Model):
         parent_id = target.parent_id
         lft = 1
         sibling = None
+        _filter = None
         if parent_id :
             sibling = Category.query.filter(Category.parent_id.__eq__(parent_id)).order_by(Category.rgt.desc()).first()
             if sibling is None:
                 parent = Category.query.filter(Category.id.__eq__(parent_id)).first()
                 lft = parent.lft+1
-
+                _filter = parent.lft
         else:
             sibling = Category.query.order_by(Category.rgt.desc()).first()
 
         if sibling:
-            Category.query.filter(Category.lft.__gt__(sibling.rgt)).update(dict(lft=Category.lft +2))
-            Category.query.filter(Category.rgt.__gt__(sibling.rgt)).update(dict(rgt=Category.rgt +2))
             lft = sibling.rgt + 1
+            _filter = sibling.rgt
+
+        if _filter :
+            Category.query.filter(Category.lft.__gt__(_filter)).update(dict(lft=Category.lft +2))
+            Category.query.filter(Category.rgt.__gt__(_filter)).update(dict(rgt=Category.rgt +2))
 
         rgt = lft + 1
         target.lft = lft
