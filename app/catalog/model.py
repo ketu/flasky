@@ -19,36 +19,24 @@ class Category(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow,onupdate=datetime.utcnow)
 
-
-
     @staticmethod
     def before_insert_or_update_event(mapper, connection, target):
         parent_id = target.parent_id
-        parent = None
         lft = 1
-        gt_filter = None
-
+        sibling = None
         if parent_id :
-            parent = Category.query.get(parent_id)
+            sibling = Category.query.filter(Category.parent_id.__eq__(parent_id)).order_by(Category.rgt.desc()).first()
+            if sibling is None:
+                parent = Category.query.filter(Category.id.__eq__(parent_id)).first()
+                lft = parent.lft+1
 
-        if parent:
-            gt_filter = parent.lft
-            lft = parent.lft + 1
         else:
-            parent = Category.query.order_by(Category.rgt.desc()).first()
+            sibling = Category.query.order_by(Category.rgt.desc()).first()
 
-            #print(parent.id)
-            if parent is not None:
-                #gt_filter = parent.rgt
-                lft = parent.rgt + 1
-
-
-        if gt_filter :
-            Category.query.filter(Category.lft.__gt__(gt_filter)).update(dict(lft=Category.lft +2))
-            Category.query.filter(Category.rgt.__gt__(gt_filter)).update(dict(rgt=Category.rgt +2))
-
-            #Category.objects().filter_by(rgt__gt = gtFilter).update(rgt = models.F('rgt') + 2)
-
+        if sibling:
+            Category.query.filter(Category.lft.__gt__(sibling.rgt)).update(dict(lft=Category.lft +2))
+            Category.query.filter(Category.rgt.__gt__(sibling.rgt)).update(dict(rgt=Category.rgt +2))
+            lft = sibling.rgt + 1
 
         rgt = lft + 1
         target.lft = lft

@@ -16,8 +16,18 @@ LOCAL_XMLRPC_USER = 'ketu'
 LOCAL_XMLRPC_PASSWD = 'xiaolai123'
 
 
+"""
+
+c = Category.query.get(2)
 
 
+c.entity_type_id = 2
+
+db.session.add(c)
+db.session.commit()
+
+exit()
+"""
 local_proxy = xmlrpclib.ServerProxy(LOCAL_XMLRPC)
 local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
@@ -32,11 +42,11 @@ for category in categories['children']:
 
     c = Category(
         entity_type_id = 1,
-        parent_id = 7
+        parent_id =2
     )
     db.session.add(c)
     db.session.commit()
-
+    exit()
 
 
 exit()
