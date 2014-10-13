@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import xmlrpclib
+import random
 
 from app.core import db
 
@@ -16,20 +17,35 @@ LOCAL_XMLRPC_USER = 'ketu'
 LOCAL_XMLRPC_PASSWD = 'xiaolai123'
 
 
-"""
 
-c = Category.query.get(2)
 
+local_proxy = xmlrpclib.ServerProxy(LOCAL_XMLRPC)
+local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
+
+
+
+
+c = Category.query.get(5)
+
+
+db.session.delete(c)
+db.session.commit()
+
+exit()
+
+
+
+c = Category.query.get(5)
 
 c.entity_type_id = 2
+c.parent_id = 7
 
 db.session.add(c)
 db.session.commit()
 
+
+
 exit()
-"""
-local_proxy = xmlrpclib.ServerProxy(LOCAL_XMLRPC)
-local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
 
 
@@ -43,11 +59,12 @@ for category in categories['children']:
     c = Category(
         entity_type_id = 1,
 
-        parent_id =2
+        parent_id = random.sample(range(1,9),1)
     )
     db.session.add(c)
     db.session.commit()
-    exit()
+    #exit()
+
 
 
 exit()
