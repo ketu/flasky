@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.orm import aliased,Query
 from sqlalchemy.orm.attributes import get_history
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from app.core import db
 from app.eav.model import Entity,Attribute
 
@@ -49,12 +50,14 @@ class Category(db.Model):
 
 
         for attr in attributes:
-            print(attr.backend_type)
-            product.join()
+            backend_type = catalog_product_entity_table_map[attr.backend_type]
+            if not backend_type:
+                continue
+            product = product.outerjoin(backend_type,backend_type.entity_id == Product.id)
 
 
+        return product.all()
 
-        return []
 
 
 
@@ -117,6 +120,8 @@ db.event.listen(Category, 'before_insert', Category.before_insert_event, propaga
 
 
 
+
+
 category_product = db.Table('catalog_category_product',
     db.Column('category_id', db.Integer, db.ForeignKey('catalog_category.id')),
     db.Column('product_id', db.Integer, db.ForeignKey('catalog_product.id'))
@@ -133,6 +138,14 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
+    @hybrid_property
+    def data(self):
+        return self.data
+
+    @hybrid_method
+    def set_data(self,data):
+        self.data=data
 
 
     @staticmethod
@@ -151,11 +164,14 @@ class Product(db.Model):
         attributes = Attribute.query.filter_by(entity_type_id= entity.id).all()
         return attributes
 
+
 class ProductGallery(db.Model):
     __tablename__ = 'catalog_product_gallery'
     id = db.Column(db.Integer, primary_key=True)
     entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
     value = db.Column(db.String(255))
+
+
 
 
 class ProductEntityVarchar(db.Model):
@@ -187,7 +203,6 @@ class ProductEntityInt(db.Model):
     entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
     value = db.Column(db.Integer,nullable=True,default=None)
 
-
 class ProductEntityText(db.Model):
     __tablename__ = 'catalog_product_entity_text'
     id = db.Column(db.Integer, primary_key=True)
@@ -196,3 +211,12 @@ class ProductEntityText(db.Model):
     store_id = db.Column(db.Integer, default=0)
     entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
     value = db.Column(db.Text,nullable=True,default=None)
+
+
+
+catalog_product_entity_table_map = {
+    'varchar':ProductEntityVarchar,
+    'decimal':ProductEntityDecimal,
+    'int':ProductEntityInt,
+    'text':ProductEntityText,
+}

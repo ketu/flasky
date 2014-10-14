@@ -24,6 +24,22 @@ local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
 
 
+c = Category.query.get(6)
+p = Product(
+    entity_type_id = 2,
+    sku = 'SKU3200',
+    categories= [c],
+
+
+)
+
+p.set_data({'name':'asdfsa'})
+db.session.add(p)
+db.session.commit()
+#p.save({"name":'sadfsa','price':'123.2'})
+print(p.data)
+exit()
+
 
 c = Category.query.get(6)
 
