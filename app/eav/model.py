@@ -5,7 +5,7 @@ from app.core import db
 
 
 
-class Entities(db.Model):
+class Entity(db.Model):
     __tablename__ = 'eav_entity'
     id = db.Column(db.Integer, primary_key=True)
     entity_code = db.Column(db.String(64))
@@ -13,12 +13,18 @@ class Entities(db.Model):
     entity_table = db.Column(db.String(128))
 
 
-class Attributes(db.Model):
+
+
+
+class Attribute(db.Model):
     __tablename__ = 'eav_attribute'
     id = db.Column(db.Integer, primary_key=True)
     entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
     attribute_code = db.Column(db.String(64))
     backend_type = db.Column(db.String(64),default='static')
+    is_required = db.Column(db.Boolean,default=False)
+
+
 
 
 

@@ -38,6 +38,10 @@ LANGUAGES = {
 
 LIST_PER_PAGE = 10
 
+SQLALCHEMY_ECHO = False
+
+SQLALCHEMY_RECORD_QUERIES = True
+
 #FLask-WFT
 #Flask-Migrate
 #Flask-Script

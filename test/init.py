@@ -25,7 +25,16 @@ local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
 
 
-c = Category.query.get(5)
+c = Category.query.get(6)
+
+product =c.get_product()
+
+print(product)
+
+
+
+exit()
+c = Category.query.get(8)
 
 
 db.session.delete(c)
@@ -34,11 +43,10 @@ db.session.commit()
 exit()
 
 
-
-c = Category.query.get(5)
+c = Category.query.get(16)
 
 c.entity_type_id = 2
-c.parent_id = 7
+c.parent_id = 3
 
 db.session.add(c)
 db.session.commit()
@@ -46,6 +54,7 @@ db.session.commit()
 
 
 exit()
+
 
 
 
