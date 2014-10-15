@@ -23,7 +23,7 @@ local_proxy = xmlrpclib.ServerProxy(LOCAL_XMLRPC)
 local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
 
-
+"""
 c = Category.query.get(6)
 p = Product(
     entity_type_id = 2,
@@ -33,19 +33,20 @@ p = Product(
 
 )
 
-p.set_data({'name':'asdfsa'})
+p.data ={'name':'asdfsa'}
 db.session.add(p)
 db.session.commit()
 #p.save({"name":'sadfsa','price':'123.2'})
 print(p.data)
 exit()
 
-
+"""
 c = Category.query.get(6)
 
 product =c.get_product()
 
-print(product)
+for p in product:
+    print(dir(p))
 
 
 

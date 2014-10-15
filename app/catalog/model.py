@@ -53,9 +53,9 @@ class Category(db.Model):
             backend_type = catalog_product_entity_table_map[attr.backend_type]
             if not backend_type:
                 continue
-            product = product.outerjoin(backend_type,backend_type.entity_id == Product.id)
+            product = product.outerjoin(backend_type,backend_type.entity_id == Product.id).add_column(backend_type.value)
 
-
+        print(product)
         return product.all()
 
 
@@ -143,8 +143,8 @@ class Product(db.Model):
     def data(self):
         return self.data
 
-    @hybrid_method
-    def set_data(self,data):
+    @data.setter
+    def data(self,data):
         self.data=data
 
 
@@ -170,7 +170,6 @@ class ProductGallery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
     value = db.Column(db.String(255))
-
 
 
 
