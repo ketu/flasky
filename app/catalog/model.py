@@ -2,9 +2,12 @@
 #-*- coding:utf8 -*-
 from datetime import datetime
 from sqlalchemy import func
-from sqlalchemy.orm import aliased,Query
+from sqlalchemy.orm import aliased,Query,Load,deferred,defer,joinedload
 from sqlalchemy.orm.attributes import get_history
+from sqlalchemy.sql.expression import select
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from sqlalchemy.ext.declarative import declared_attr
+
 from app.core import db
 from app.eav.model import Entity,Attribute
 
@@ -41,19 +44,18 @@ class Category(db.Model):
     def get_product(self):
 
         children_ids = self.get_sub_children_id()
-        children_ids.insert(0,self.id)
 
+        children_ids.insert(0,self.id)
 
         product = Product.query.filter(Product.categories.any(Category.id.in_(children_ids)))
 
         attributes = Product.get_list_attributes()
 
-
         for attr in attributes:
             backend_type = catalog_product_entity_table_map[attr.backend_type]
             if not backend_type:
                 continue
-            product = product.outerjoin(backend_type,backend_type.entity_id == Product.id).add_column(backend_type.value)
+            product = product.outerjoin(backend_type,backend_type.entity_id == Product.id).add_entity(backend_type).options( defer(backend_type.value))
 
         print(product)
         return product.all()
@@ -78,7 +80,7 @@ class Category(db.Model):
         if not unchanged_parent_id :
             Category.query.filter(Category.lft.between(target.lft,target.rgt)).update(dict(lft=Category.lft - 1,rgt=Category.rgt-1),synchronize_session=False)
             Category.query.filter(Category.lft.__gt__(target.rgt)).update(dict(lft=Category.lft - 2),synchronize_session=False)
-            Category.query.filter(Category.lft.__gt__(target.rgt)).update(dict(lft=Category.lft - 2),synchronize_session=False)
+            Category.query.filter(Category.rgt.__gt__(target.rgt)).update(dict(lft=Category.rgt - 2),synchronize_session=False)
             Category.before_insert_event(mapper,connection,target)
 
 
@@ -139,13 +141,21 @@ class Product(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-    @hybrid_property
+
+
+    @declared_attr
+    def eav(self):
+        return None
+
+
+
+    @property
     def data(self):
-        return self.data
+        return self.eav
 
     @data.setter
     def data(self,data):
-        self.data=data
+        self.eav =data
 
 
     @staticmethod

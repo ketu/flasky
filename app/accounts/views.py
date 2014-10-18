@@ -70,6 +70,4 @@ def logout():
     return redirect(url_for('accounts.login'))
 
 
-
-
 app.register_blueprint(account)

@@ -23,12 +23,13 @@ local_proxy = xmlrpclib.ServerProxy(LOCAL_XMLRPC)
 local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
 
-"""
+
 c = Category.query.get(6)
 p = Product(
     entity_type_id = 2,
-    sku = 'SKU3200',
+    sku = 'SKU333223300',
     categories= [c],
+
 
 
 )
@@ -40,13 +41,12 @@ db.session.commit()
 print(p.data)
 exit()
 
-"""
 c = Category.query.get(6)
 
 product =c.get_product()
 
 for p in product:
-    print(dir(p))
+    print(dir(p.catalog_product_sku))
 
 
 
