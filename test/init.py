@@ -27,7 +27,7 @@ local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 c = Category.query.get(6)
 p = Product(
     entity_type_id = 2,
-    sku = 'SKU333223300',
+    sku = 'SKU3332233333300',
     categories= [c],
 
 

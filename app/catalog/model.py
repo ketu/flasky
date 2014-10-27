@@ -129,6 +129,9 @@ category_product = db.Table('catalog_category_product',
     db.Column('product_id', db.Integer, db.ForeignKey('catalog_product.id'))
 )
 
+
+
+
 class Product(db.Model):
     __tablename__ = 'catalog_product'
     id = db.Column(db.Integer, primary_key=True)
@@ -141,13 +144,9 @@ class Product(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-
-
     @declared_attr
     def eav(self):
-        return None
-
-
+        pass
 
     @property
     def data(self):
@@ -155,8 +154,7 @@ class Product(db.Model):
 
     @data.setter
     def data(self,data):
-        self.eav =data
-
+        self.eav = data
 
     @staticmethod
     def get_entity_type():
