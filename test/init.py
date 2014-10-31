@@ -9,6 +9,7 @@ from app.core import db
 from app.customers.model import Customer,Address
 from app.catalog.model import Category,Product
 from app.sales.model import Order,Shipment,Invoice,OrderItem
+from mongoengine.fields import ObjectId
 
 
 
@@ -23,58 +24,28 @@ local_proxy = xmlrpclib.ServerProxy(LOCAL_XMLRPC)
 local_session = local_proxy.login(LOCAL_XMLRPC_USER,LOCAL_XMLRPC_PASSWD)
 
 
+parent_ids = []
+test = Category.objects().all()
+for t in test:
+    print(t.name,t.id,t.lft,t.rgt)
+    parent_ids.append(t.id)
 
-c = Category.query.get(6)
-p = Product(
-    entity_type_id = 2,
-    sku = 'SKU3332233333300',
-    categories= [c],
+#print(parent_ids)
 
+object_id = ObjectId(random.sample(parent_ids,1)[0])
 
+parent_category = Category.objects.get(id='544f559e3d49242a698eca5e')
 
-)
+print(object_id)
+load_category = Category.objects.get(name = 'Cables')
+print(load_category.name)
+load_category.parent = parent_category
 
-p.data ={'name':'asdfsa'}
-db.session.add(p)
-db.session.commit()
-#p.save({"name":'sadfsa','price':'123.2'})
-print(p.data)
+load_category.save()
+test = Category.objects().all()
+for t in test:
+    print(t.name,t.id,t.lft,t.rgt)
 exit()
-
-c = Category.query.get(6)
-
-product =c.get_product()
-
-for p in product:
-    print(dir(p.catalog_product_sku))
-
-
-
-exit()
-c = Category.query.get(8)
-
-
-db.session.delete(c)
-db.session.commit()
-
-exit()
-
-
-c = Category.query.get(16)
-
-c.entity_type_id = 2
-c.parent_id = 3
-
-db.session.add(c)
-db.session.commit()
-
-
-
-exit()
-
-
-
-
 
 categories = local_proxy.call(local_session,'catalog_category.tree',[3])
 
@@ -83,12 +54,14 @@ for category in categories['children']:
     #print(category)
 
     c = Category(
-        entity_type_id = 1,
+        #parent_id = random.sample(range(1,9),1)
 
-        parent_id = random.sample(range(1,9),1)
+        name = category['name']
+
+
     )
-    db.session.add(c)
-    db.session.commit()
+
+    c.save()
     #exit()
 
 

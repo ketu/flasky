@@ -14,13 +14,13 @@ catalog = Blueprint('catalog', __name__,url_prefix='/catalog',template_folder=os
 @catalog.route('/category/')
 @login_required
 def category():
-    return render_template('dashboard.html')
+    return render_template('category.html')
 
 
 @catalog.route('/product/')
 @login_required
 def product():
-    return render_template('message.html')
+    return render_template('product.html')
 
 
 

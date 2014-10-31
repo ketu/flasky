@@ -1,34 +1,18 @@
 #/usr/bin/env python
 #-*- coding:utf8 -*-
-from datetime import datetime
-from sqlalchemy import func
-from sqlalchemy.orm import aliased,Query,Load,deferred,defer,joinedload
-from sqlalchemy.orm.attributes import get_history
-from sqlalchemy.sql.expression import select
-from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.ext.declarative import declared_attr
-
+from mongoengine import signals
 from app.core import db
-from app.eav.model import Entity,Attribute
 
-
-class Category(db.Model):
-    __tablename__ = 'catalog_category'
-    id = db.Column(db.Integer, primary_key=True)
-    #name = db.Column(db.String(255))
-    parent_id = db.Column(db.Integer,db.ForeignKey('catalog_category.id'),nullable=True)
-    parent = db.relationship("Category",remote_side =[id],uselist=False)
-    entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
-    lft = db.Column(db.Integer, nullable=True)
-    rgt = db.Column(db.Integer, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow,onupdate=datetime.utcnow)
-
+class Category(db.DynamicDocument):
+    parent = db.ReferenceField("Category")
+    lft = db.IntField()
+    rgt = db.IntField()
+    created_at = db.DateTimeField()
+    updated_at = db.DateTimeField()
 
     def get_children(self):
         children = Category.query.filter(Category.lft.between(self.lft,self.rgt)).order_by(Category.lft.asc())
         return children
-
 
     def get_sub_children(self):
         children = Category.query.filter(Category.lft.between(self.lft,self.rgt)).filter(Category.parent_id.__eq__(self.id)).order_by(Category.lft.asc())
@@ -41,189 +25,69 @@ class Category(db.Model):
             children_ids.append(child.id)
         return children_ids
 
-    def get_product(self):
 
-        children_ids = self.get_sub_children_id()
-
-        children_ids.insert(0,self.id)
-
-        product = Product.query.filter(Product.categories.any(Category.id.in_(children_ids)))
-
-        attributes = Product.get_list_attributes()
-
-        for attr in attributes:
-            backend_type = catalog_product_entity_table_map[attr.backend_type]
-            if not backend_type:
-                continue
-            product = product.outerjoin(backend_type,backend_type.entity_id == Product.id).add_entity(backend_type).options( defer(backend_type.value))
-
-        print(product)
-        return product.all()
-
-
-
-
+    @staticmethod
+    def before_delete_event(sender,document,**kwargs):
+        depth = document.rgt - document.lft + 1
+        sender.objects.filter(lft__gte=document.lft).filter(rgt__lte=document.rgt).delete()
+        sender.objects.filter(lft__gt=document.rgt).update(dec__lft=depth)
+        sender.objects.filter(rgt__gt=document.rgt).update(dec__lft=depth)
 
 
     @staticmethod
-    def before_delete_event(mapper,connection,target):
-        depth = target.rgt - target.lft + 1
-        mapper.confirm_deleted_rows = False
-        Category.query.filter(Category.lft.between(target.lft,target.rgt)).delete(synchronize_session=False)
-        Category.query.filter(Category.lft.__gt__(target.rgt)).update(dict(lft=Category.lft - depth))
-        Category.query.filter(Category.rgt.__gt__(target.rgt)).update(dict(rgt=Category.rgt - depth))
+    def before_update_event(sender, document, **kwargs):
+        sender.objects.filter(parent = document).order_by("-rgt").update(parent=None)
+        sender.objects.filter(lft__gte=document.lft).filter(rgt__lte=document.rgt).update(dec__lft = 1,dec__rgt = 1)
+        sender.objects.filter(lft__gt=document.rgt).update(dec__lft = 2)
+        sender.objects.filter(rgt__gt=document.rgt).update(dec__rgt = 2)
+        Category.before_insert_event(sender,document,**kwargs)
 
     @staticmethod
-    def before_update_event(mapper,connection,target):
-        original_target_parent_data =  get_history(target,'parent_id')
-        unchanged_parent_id = original_target_parent_data[1]
-        if not unchanged_parent_id :
-            Category.query.filter(Category.lft.between(target.lft,target.rgt)).update(dict(lft=Category.lft - 1,rgt=Category.rgt-1),synchronize_session=False)
-            Category.query.filter(Category.lft.__gt__(target.rgt)).update(dict(lft=Category.lft - 2),synchronize_session=False)
-            Category.query.filter(Category.rgt.__gt__(target.rgt)).update(dict(lft=Category.rgt - 2),synchronize_session=False)
-            Category.before_insert_event(mapper,connection,target)
-
+    def listen_save_event(sender,document,**kwargs):
+        if hasattr(document,"_changed_fields") :
+            if "parent" in document._changed_fields:
+                Category.before_update_event(sender,document,**kwargs)
+        else:
+            Category.before_insert_event(sender,document,**kwargs)
 
     @staticmethod
-    def before_insert_event(mapper, connection, target):
-        parent_id = target.parent_id
+    def before_insert_event(sender, document, **kwargs):
+        parent = document.parent
+
         lft = 1
         sibling = None
         _filter = None
-        parent = None
-        if parent_id :
-            parent = Category.query.filter(Category.id.__eq__(parent_id)).first()
-            if parent :
-                sibling = Category.query.filter(Category.parent_id.__eq__(parent_id)).order_by(Category.rgt.desc()).first()
-                if sibling is None:
-                    lft = parent.lft+1
-                    _filter = parent.lft
 
-        if parent is None:
-            sibling = Category.query.order_by(Category.rgt.desc()).first()
-            target.parent_id = None
+        if parent :
+            sibling = sender.objects.filter(parent = parent).order_by("-rgt").first()
+            if sibling is None:
+                lft = parent.lft+1
+                _filter = parent.lft
+        else:
+            sibling = sender.objects.order_by("-rgt").first()
+            document.parent = None
 
         if sibling:
             lft = sibling.rgt + 1
             _filter = sibling.rgt
 
         if _filter :
-            Category.query.filter(Category.lft.__gt__(_filter)).update(dict(lft=Category.lft +2))
-            Category.query.filter(Category.rgt.__gt__(_filter)).update(dict(rgt=Category.rgt +2))
+            sender.objects.filter(lft__gt=_filter).update(inc__lft = 2)
+            sender.objects.filter(rgt__gt=_filter).update(inc__rgt =2)
 
         rgt = lft + 1
-        target.lft = lft
-        target.rgt = rgt
+        document.lft = lft
+        document.rgt = rgt
+
+signals.pre_save.connect(Category.listen_save_event,sender = Category)
+signals.pre_delete.connect(Category.before_delete_event,sender=Category)
+
+class Product(db.DynamicDocument):
+    sku = db.StringField(required=True,unique=True)
+    created_at = db.DateTimeField()
+    updated_at = db.DateTimeField()
 
 
-db.event.listen(Category, 'before_delete', Category.before_delete_event, propagate =True,retval=True)
-db.event.listen(Category, 'before_update', Category.before_update_event, propagate =True,retval=True)
-db.event.listen(Category, 'before_insert', Category.before_insert_event, propagate =True,retval=True)
-
-
-
-
-
-category_product = db.Table('catalog_category_product',
-    db.Column('category_id', db.Integer, db.ForeignKey('catalog_category.id')),
-    db.Column('product_id', db.Integer, db.ForeignKey('catalog_product.id'))
-)
-
-
-
-
-class Product(db.Model):
-    __tablename__ = 'catalog_product'
-    id = db.Column(db.Integer, primary_key=True)
-    entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
-    sku = db.Column(db.String(64),unique=True)
-
-    categories = db.relationship('Category', secondary=category_product,lazy='dynamic')
-
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-
-    @declared_attr
-    def eav(self):
-        pass
-
-    @property
-    def data(self):
-        return self.eav
-
-    @data.setter
-    def data(self,data):
-        self.eav = data
-
-    @staticmethod
-    def get_entity_type():
-        entity = Entity.query.filter_by(entity_code='catalog_product').one()
-        return entity
-
-    @staticmethod
-    def get_list_attributes():
-        attributes = Product.get_attributes()
-        return attributes
-
-    @staticmethod
-    def get_attributes():
-        entity = Product.get_entity_type()
-        attributes = Attribute.query.filter_by(entity_type_id= entity.id).all()
-        return attributes
-
-
-class ProductGallery(db.Model):
-    __tablename__ = 'catalog_product_gallery'
-    id = db.Column(db.Integer, primary_key=True)
-    entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
-    value = db.Column(db.String(255))
-
-
-
-class ProductEntityVarchar(db.Model):
-    __tablename__ = 'catalog_product_entity_varchar'
-    id = db.Column(db.Integer, primary_key=True)
-    entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
-    attribute_id = db.Column(db.Integer,db.ForeignKey('eav_attribute.id'))
-    store_id = db.Column(db.Integer, default=0)
-    entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
-    value = db.Column(db.String(255),nullable=True,default=None)
-
-
-class ProductEntityDecimal(db.Model):
-    __tablename__ = 'catalog_product_entity_decimal'
-    id = db.Column(db.Integer, primary_key=True)
-    entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
-    attribute_id = db.Column(db.Integer,db.ForeignKey('eav_attribute.id'))
-    store_id = db.Column(db.Integer, default=0)
-    entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
-    value = db.Column(db.Numeric(12,4),nullable=True,default=None)
-
-
-class ProductEntityInt(db.Model):
-    __tablename__ = 'catalog_product_entity_int'
-    id = db.Column(db.Integer, primary_key=True)
-    entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
-    attribute_id = db.Column(db.Integer,db.ForeignKey('eav_attribute.id'))
-    store_id = db.Column(db.Integer, default=0)
-    entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
-    value = db.Column(db.Integer,nullable=True,default=None)
-
-class ProductEntityText(db.Model):
-    __tablename__ = 'catalog_product_entity_text'
-    id = db.Column(db.Integer, primary_key=True)
-    entity_type_id = db.Column(db.Integer,db.ForeignKey('eav_entity.id'))
-    attribute_id = db.Column(db.Integer,db.ForeignKey('eav_attribute.id'))
-    store_id = db.Column(db.Integer, default=0)
-    entity_id = db.Column(db.Integer,db.ForeignKey('catalog_product.id'))
-    value = db.Column(db.Text,nullable=True,default=None)
-
-
-
-catalog_product_entity_table_map = {
-    'varchar':ProductEntityVarchar,
-    'decimal':ProductEntityDecimal,
-    'int':ProductEntityInt,
-    'text':ProductEntityText,
-}
+class ProductGallery(db.DynamicDocument):
+    product = db.ReferenceField("Product")
+    value = db.StringField(required=True)

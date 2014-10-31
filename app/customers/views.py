@@ -18,12 +18,32 @@ customers = Blueprint('customers', __name__,url_prefix='/customers',template_fol
 
 
 @customers.route('/')
-@customers.route('/list/<int:page>/')
+@customers.route('/customer/<int:page>/')
 @login_required
-def index(page = 1):
+def customer(page = 1):
+    #page = (Customer.query.count() - 1) / current_app.config['LIST_PER_PAGE'] + 1
+    pagination = Customer.objects.order_by("-id").paginate(page = page, per_page=10, error_out=False)
+    return render_template('customers.html',customers = pagination.items,pagination=pagination)
+
+
+@customers.route('/group/')
+@customers.route('/group/<int:page>/')
+@login_required
+def group(page = 1):
     #page = (Customer.query.count() - 1) / current_app.config['LIST_PER_PAGE'] + 1
     pagination = Customer.query.order_by(Customer.id.desc()).paginate(page = page, per_page=10, error_out=False)
     return render_template('customers.html',customers = pagination.items,pagination=pagination)
+
+
+@customers.route('/address/')
+@customers.route('/address/<int:page>/')
+@login_required
+def address(page = 1):
+    #page = (Customer.query.count() - 1) / current_app.config['LIST_PER_PAGE'] + 1
+    pagination = Customer.query.order_by(Customer.id.desc()).paginate(page = page, per_page=10, error_out=False)
+    return render_template('customers.html',customers = pagination.items,pagination=pagination)
+
+
 
 
 @customers.route('/add/', methods = ['GET','POST'])
@@ -51,6 +71,8 @@ def add():
 @login_required
 def view():
     return render_template('message.html')
+
+
 
 
 

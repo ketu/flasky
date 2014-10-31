@@ -6,7 +6,6 @@
 {%block heading %}
         {{super()}}
         <a href="{{url_for('customers.add')}}" class="btn btn-primary" title="{{_('Add new customer')}}">{{_("Add")}}</a>
-
         {%endblock%}
 {%block main %}
     <div class="table-responsive">
@@ -57,11 +56,13 @@
                                 </table>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <div class="dataTables_info" id="dataTables-customer_info" role="alert" aria-live="polite" aria-relevant="all">Showing 1 to 10 of 57 entries</div>
+                                            <!--
+                                            <div class="dataTables_info" id="dataTables-customer_info" role="alert" aria-live="polite" aria-relevant="all">{{ _("Showing %d to %d of %d entries"%( pagination.page,2, pagination.total))}}</div>
+                                            -->
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="dataTables_paginate paging_simple_numbers" id="dataTables-customer_paginate">
-                                                {{ macros.pagination(pagination, 'customers.index', fragment='#comments') }}
+                                                {{ macros.pagination(pagination, 'customers.customer', fragment='#comments') }}
                                             </div>
                                         </div>
                                     </div>

@@ -2,7 +2,7 @@
 {% block content %}
  <div id="wrapper">
     <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">{{ _('Toggle navigation') }}</span>
@@ -132,75 +132,57 @@
             </ul>
             <!-- /.navbar-top-links -->
 
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
-                            <form method="get" action="{{ url_for('search') }}">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" name="q" placeholder="Search...">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                                </span>
-
-                            </div>
-                            </form>
-                            <!-- /input-group -->
-                        </li>
-                        <li>
-                            <a href="{{ url_for('system.dashboard') }}"><i class="fa fa-dashboard fa-fw"></i> {{ _('Dashboard')}}</a>
-                        </li>
-
-                         <li>
-                            <a href="{{ url_for('customers.index') }}"><i class="fa fa-dashboard fa-fw"></i> {{ _('Customers')}}</a>
-                        </li>
-
-                        <li>
-                            <a href="javascript:void(0)"><i class="fa fa-wrench fa-fw"></i> {{ _('Sales') }}<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="{{ url_for('sales.order') }}">{{ _('Order') }}</a>
-                                </li>
-                                <li>
-                                    <a href="{{ url_for('sales.shipment') }}">{{ _('Shipment') }}</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)"><i class="fa fa-sitemap fa-fw"></i> {{ _('Catalog') }}<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="{{ url_for('catalog.category') }}">{{ _('Category') }}</a>
-                                </li>
-                                <li>
-                                     <a href="{{ url_for('catalog.product') }}">{{ _('Product') }}</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0)">{{ _('Attributes') }} <span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level">
-                                        <li>
-                                            <a href="#">{{ _('Attribute Set') }}</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">{{ _('Attributes') }}</a>
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-third-level -->
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
             <!-- /.navbar-static-side -->
         </nav>
 
+      <nav class="navbar navbar-default" role="navigation">
+          <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('system.dashboard') }}"><i class="fa fa-dashboard fa-fw"></i> {{ _('Dashboard')}}</a>
+            </div>
 
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+              <ul class="nav navbar-nav">
+                <li>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><i class="fa fa-wrench fa-fw"></i> {{ _('Sales') }}</a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{{ url_for('sales.order') }}">{{ _('Order') }}</a></li>
+                            <li><a href="{{ url_for('sales.shipment') }}">{{ _('Shipment') }}</a></li>
+                        </ul>
+                            <!-- /.nav-second-level -->
+                </li>
+                     <!-- /.nav-second-level -->
+                <li>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><i class="fa fa-wrench fa-fw"></i> {{ _('Catalog') }}</a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{{ url_for('catalog.category') }}">{{ _('Category') }}</a></li>
+                            <li><a href="{{ url_for('catalog.product') }}">{{ _('Product') }}</a></li>
+                        </ul>
+                            <!-- /.nav-second-level -->
+                </li>
+                <li>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)"><i class="fa fa-wrench fa-fw"></i> {{ _('Customer') }}</a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{{ url_for('customers.customer') }}">{{ _('Customer') }}</a></li>
+                            <li><a href="{{ url_for('customers.group') }}">{{ _('Customer Group') }}</a></li>
+                            <li><a href="{{ url_for('customers.address') }}">{{ _('Address') }}</a></li>
+                        </ul>
+                </li>
+              </ul>
+                <form method="get"  class="navbar-form navbar-right" role="search" action="{{ url_for('search') }}">
+                    <div class="input-group custom-search-form">
+                        <input type="text" class="form-control" name="q" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                        </span>
+
+                    </div>
+              </form>
+
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
         {% block wrapper %}
              <div id="page-wrapper">
             <div class="row">

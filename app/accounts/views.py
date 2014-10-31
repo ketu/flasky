@@ -21,15 +21,16 @@ account = Blueprint('accounts', __name__,url_prefix='/accounts',template_folder=
 
 @login_manager.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+
+    return User.objects.get(pk=id)
 
 
 @account.route('/login/',methods=['GET','POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is not None and user.verify_password(form.password.data):
+        user = User.objects.filter(email=form.email.data).first()
+        if user is not None and user.verify_password_hash(form.password.data):
             login_user(user, form.remember.data)
             return redirect(request.args.get('next') or url_for('system.dashboard'))
         flash('Invalid username or password.')
@@ -46,8 +47,6 @@ def register():
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
-
-
 
         flash('A confirmation email has been sent to you by email. '+token)
         return redirect(url_for('accounts.login'))
