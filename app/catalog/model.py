@@ -10,6 +10,17 @@ class Category(db.DynamicDocument):
     created_at = db.DateTimeField()
     updated_at = db.DateTimeField()
 
+
+
+
+    def __str__(self):
+        return self.name
+
+    @staticmethod
+    def get_categories_tree(self):
+        return Category.objects.children()
+
+
     def get_children(self):
         children = Category.query.filter(Category.lft.between(self.lft,self.rgt)).order_by(Category.lft.asc())
         return children

@@ -46,7 +46,7 @@ def address(page = 1):
 
 
 
-@customers.route('/add/', methods = ['GET','POST'])
+@customers.route('/add/', endpoint='add_customer', methods = ['GET','POST'])
 @login_required
 def add():
     form = CustomerForm()
