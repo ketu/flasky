@@ -10,8 +10,17 @@
 {% endmacro %}
 
 
-{% macro totals(order) %}
+{% macro breadcrumb(breadcrumb = None) %}
+    {% if breadcrumb %}
+ <ol class="breadcrumb">
+     {% for b in breadcrumb %}
+     <li><a href="#">Home</a></li>
 
+     {% endfor %}
+     <li><a href="#">Pages</a></li>
+     <li class="active">Invoice</li>
+</ol>
+        {% endif %}
 {% endmacro %}
 
 {% macro pagination(pagination, endpoint, fragment='') %}
@@ -25,7 +34,7 @@
         {% if p %}
             {% if p == pagination.page %}
             <li class="paginate_button active">
-                <a href="{{ url_for(endpoint, page = p, **kwargs) }}{{ fragment }}">{{ p }}</a>
+                <span>{{ p }}</span>
             </li>
             {% else %}
             <li class="paginate_button ">
@@ -33,7 +42,7 @@
             </li>
             {% endif %}
         {% else %}
-        <li class="disabled"><a href="#">&hellip;</a></li>
+        <li class="disabled"><a href="javascript:void(0)">&hellip;</a></li>
         {% endif %}
     {% endfor %}
         <li class="paginate_button next {% if not pagination.has_next %}disabled{% endif %}" tabindex="0" id="dataTables-customer_next">

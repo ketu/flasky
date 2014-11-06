@@ -31,4 +31,4 @@ class Address(db.Document):
     fax = db.StringField()
     company = db.StringField()
     address_type = db.StringField(choices = ('shipping','billing'))
-    created_at = db.DateTimeField()
+    created_at = db.DateTimeField(default=datetime.now)

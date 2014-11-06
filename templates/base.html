@@ -8,15 +8,19 @@
 {% endblock %}
 {% block styles %}
     {{super()}}
-    <link rel="stylesheet" href="{{url_for('static', filename='css/plugins/metisMenu/metisMenu.min.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='font-awesome-4.1.0/css/font-awesome.min.css')}}">
+ <link href="{{url_for('static', filename='css/stylesheets.css')}}" rel="stylesheet" type="text/css" />
 {% endblock %}
-
 
 {% block scripts %}
     {{super()}}
-    <script src="{{url_for('static', filename='js/plugins/metisMenu/metisMenu.min.js')}}"></script>
-    <script src="{{url_for('static', filename='js/flasky.js')}}"></script>
-    {% block custom_scripts %}{% endblock %}
+
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/jquery/jquery-ui.min.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/jquery/jquery-migrate.min.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/jquery/globalize.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/uniform/jquery.uniform.min.js')}}"></script>
+    {% block custom_scripts %}
+    {% endblock %}
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/actions.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/settings.js')}}"></script>
 {% endblock %}

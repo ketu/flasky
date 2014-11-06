@@ -1,0 +1,77 @@
+{% extends "admin.html" %}
+{% block main %}
+     {{super()}}
+        <div class="row">
+
+            <div class="col-md-8">
+                <div class="block">
+                    <div class="content controls">
+                        <div class="form-row">
+                            <div class="col-md-2">{{ _('Name')}}:</div>
+                            <div class="col-md-10"><input type="text" class="form-control"></div>
+                        </div>
+                         <div class="form-row">
+                            <div class="col-md-2">{{_('Parent')}}:</div>
+                            <div class="col-md-10">
+
+                                <select class="select2" multiple="multiple" style="width: 100%;" tabindex="-1">
+                                        <option value="AZ">Arizona</option>
+                                        <option value="CO">Colorado</option>
+                                        <option value="ID">Idaho</option>
+                                        <option value="MT" selected="selected">Montana</option>
+                                        <option value="NE">Nebraska</option>
+                                        <option value="NM">New Mexico</option>
+                                        <option value="ND">North Dakota</option>
+                                        <option value="UT">Utah</option>
+                                        <option value="WY">Wyoming</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-2">Date and time:</div>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="icon-globe"></span></div>
+                                    <input type="text" class="datetimepicker form-control"/>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-2">{{_('Description')}}</div>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <div class="content np">
+                                    <textarea class="cle"></textarea>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="form-row">
+                             <div class="col-md-12">
+                               <div class="input-group pull-right">
+                                  <button type="button" class="btn btn-default">{{_('Submit')}}</button>
+                                </div>
+
+                                 </div>
+                         </div>
+                    </div>
+
+
+                </div><!-- block -->
+            </div><!-- col-md-6-->
+            <div class="col-md-4"></div><!-- col-md-6-->
+        </div><!-- row -->
+{% endblock %}
+
+{% block custom_scripts %}
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/select2/select2.min.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/tagsinput/jquery.tagsinput.min.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/jquery/jquery-ui-timepicker-addon.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/ibutton/jquery.ibutton.js')}}"></script>
+    <script type='text/javascript' src="{{url_for('static', filename='js/plugins/cleditor/jquery.cleditor.min.js')}}"></script>
+
+ {% endblock %}
+

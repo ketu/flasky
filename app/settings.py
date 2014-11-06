@@ -6,6 +6,7 @@ DEBUG = True
 
 SITE_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
+#BOOTSTRAP_SERVE_LOCAL = True
 
 CSRF_ENABLED = True
 
@@ -30,7 +31,13 @@ INSTALLED_APPLICATION = (
 )
 
 
-API_TYPE = ('amazon','magento','ebay','aliexpress','other')
+API_TYPE = (
+    'amazon',
+    'magento',
+    'ebay',
+    'aliexpress',
+    'other'
+)
 
 LANGUAGES = {
     'en': 'English',

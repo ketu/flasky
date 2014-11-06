@@ -10,9 +10,6 @@ class Category(db.DynamicDocument):
     created_at = db.DateTimeField()
     updated_at = db.DateTimeField()
 
-
-
-
     def __str__(self):
         return self.name
 
